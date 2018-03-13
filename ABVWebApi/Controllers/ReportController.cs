@@ -53,15 +53,6 @@ namespace ABVWebApi.Controllers
                 foreach (var item in data)
                 {
                     arr[item.Month] = item.Amount;
-                    /*try
-                    {
-                        arr[Int32.Parse(item.Month)] = item.Amount;
-                    } catch (Exception e )
-                    {
-                        return NotFound();
-                    }*/
-                    
-
                 }
                 report.Add(accountName, arr);
             }
