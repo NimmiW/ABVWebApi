@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ABVWebApi.Models;
+using System.Web.Http.Cors;
 
 namespace ABVWebApi.Controllers
 {
@@ -19,12 +20,17 @@ namespace ABVWebApi.Controllers
 
         private string[] accountNames = new string[] { "RandD", "Canteen", "CEOCar", "Marketing", "ParkingFines" };
 
-        // POST: api/Report
-        /*public void Post([FromBody]string value)
-        {
-        }*/
 
-        // GET: api/Transactions/5
+        private void Populate<T>(T[] arr, T value)
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = value;
+            }
+        }
+
+        // GET: api/Report/5
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
         [ResponseType(typeof(Hashtable))]
         public IHttpActionResult GetReport(long year)
         {
@@ -35,33 +41,25 @@ namespace ABVWebApi.Controllers
 
             foreach (string accountName in accountNames)
             {
+
                 var data = from p in db.Transactions
-                             where (p.Year == year && p.AccountName == accountName)
-                             select p.Amount ;  //new { AccountName = p.Month, Amount = p.Amount };
-                report.Add(accountName, data);
-            }
-
-            
-
-
-            /*var categories =from p in db.Transactions
+                            where (p.Year == year && p.AccountName == accountName)
                             group p by p.AccountName into g
-                            select new { Category = g.Key, Sum = g.Sum(p => p.Amount) };*/
+                            select new
+                            {
+                                Month = g.Key,
+                                Amount = g.Sum(p => p.Amount)
+                            };
 
+                float[] arr = new float[12];
+                Populate(arr, 0);
+                foreach (var item in data)
+                {
+                    arr[Int32.Parse(item.Month)] = item.Amount;
 
-
-            // This will raise an exception if entity not found
-            // Use SingleOrDefault instead
-            //List<Transaction> transactions = query.ToList<Transaction>();
-
-
-
-            //report.Canteen = new int[] { 2, 4, 3, 5 };
-            /*Transaction transaction = db.Transactions.Find(id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }*/
+                }
+                report.Add(accountName, arr);
+            }
 
             return Ok(report);
         }
