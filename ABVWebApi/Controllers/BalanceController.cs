@@ -16,10 +16,8 @@ namespace ABVWebApi.Controllers
 {
     public class BalanceController : ApiController
     {
+
         private ABVWebApiContext db = new ABVWebApiContext();
-
-        private string[] accountNames = new string[] { "RandD", "Canteen", "CEOCar", "Marketing", "ParkingFines" };
-
 
         private void Populate<T>(T[] arr, T value)
         {
@@ -31,7 +29,7 @@ namespace ABVWebApi.Controllers
 
         // GET: api/Balance/5
         [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
-        [ResponseType(typeof(string))]
+        [ResponseType(typeof(List<Balance>))]
         public IHttpActionResult GetBalance(int month, int year)
         {
             if (!(month >= 0 && month <= 11 && year>0))
@@ -39,30 +37,38 @@ namespace ABVWebApi.Controllers
                 return NotFound();
             }
 
-            Hashtable accountBalances = new Hashtable();
+            Account[] accounts = db.Accounts.ToArray();
 
-            foreach (string accountName in accountNames)
+            List<Balance> balances = new List<Balance>();
+
+            foreach (Account account in accounts)
             {
+                string accountName = account.AccountName;
+                long accountId = account.Id;
 
-                var amount = from p in db.Transactions
-                             where (p.Year == year && p.Month == month && p.AccountName == accountName)
-                             group p by p.AccountName into g
-                             select new
-                             {
-                                 Amount = g.Sum(p => p.Amount)
-                             };
+                var amount = (from p in db.Transactions
+                              where (p.Year == year && p.Month == month && p.AccountId == accountId)
+                              select p.Amount).ToArray();
 
-                /*float[] arr = new float[12];
-                Populate(arr, 0);
-                foreach (var item in data)
+                double adjustedAmount = 0;
+                if (amount.Length > 0)
                 {
-                    arr[Int32.Parse(item.Month)] = item.Amount;
+                    adjustedAmount = amount[0];
+                }
 
-                }*/
-                accountBalances.Add(accountName, amount);
+                Balance balance = new Balance();
+
+                balance.accountName = accountName;
+                balance.amount = adjustedAmount;
+                balance.month = month;
+                //,adjustedAmount);
+                //ar amount3 = amount
+                balances.Add(balance);
             }
 
-            return Ok(accountBalances);
+            //var jsonObj = [];
+
+            return Ok(balances);
         }
 
         // POST: api/Balance
@@ -70,9 +76,5 @@ namespace ABVWebApi.Controllers
         {
         }
 
-        // PUT: api/Balance/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
     }
 }

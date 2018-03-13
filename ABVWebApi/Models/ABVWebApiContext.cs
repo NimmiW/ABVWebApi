@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
+
 namespace ABVWebApi.Models
 {
     public class ABVWebApiContext : DbContext
@@ -19,6 +20,9 @@ namespace ABVWebApi.Models
         {
         }
 
+
         public System.Data.Entity.DbSet<ABVWebApi.Models.Transaction> Transactions { get; set; }
+
+        public System.Data.Entity.DbSet<ABVWebApi.Models.Account> Accounts { get; set; }
     }
 }

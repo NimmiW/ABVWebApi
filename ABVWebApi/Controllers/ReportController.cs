@@ -34,6 +34,8 @@ namespace ABVWebApi.Controllers
         [ResponseType(typeof(Hashtable))]
         public IHttpActionResult GetReport(long year)
         {
+            Account[] accounts = db.Accounts.ToArray();
+
             if ( year < 0)
             {
                 return NotFound();
@@ -41,19 +43,20 @@ namespace ABVWebApi.Controllers
 
             Hashtable report = new Hashtable();
 
-            foreach (string accountName in accountNames)
+            foreach (Account account in accounts)
             {
+                string accountName = account.AccountName;
+                long accountId = account.Id;
 
                 var data = from p in db.Transactions
-                            where (p.Year == year && p.AccountName == accountName)
-                            group p by p.Month into g
-                            select new
-                            {
-                                Month = g.Key,
-                                Amount = g.Sum(p => p.Amount)
-                            };
+                           where (p.Year == year && p.AccountId == accountId)
+                           select new
+                           {
+                               Month = p.Month,
+                               Amount = p.Amount
+                           }; 
 
-                float[] arr = new float[12];
+                double[] arr = new double[12];
                 Populate(arr, 0);
                 foreach (var item in data)
                 {
