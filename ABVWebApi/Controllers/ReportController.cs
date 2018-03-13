@@ -34,6 +34,11 @@ namespace ABVWebApi.Controllers
         [ResponseType(typeof(Hashtable))]
         public IHttpActionResult GetReport(long year)
         {
+            if ( year < 0)
+            {
+                return NotFound();
+            }
+
             Hashtable report = new Hashtable();
 
             foreach (string accountName in accountNames)
