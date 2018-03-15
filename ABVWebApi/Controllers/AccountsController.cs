@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ABVWebApi.Models;
+using System.Web.Http.Cors;
 
 namespace ABVWebApi.Controllers
 {
@@ -17,6 +18,7 @@ namespace ABVWebApi.Controllers
         private ABVWebApiContext db = new ABVWebApiContext();
 
         // GET: api/Accounts
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
         public IQueryable<Account> GetAccounts()
         {
             return db.Accounts;

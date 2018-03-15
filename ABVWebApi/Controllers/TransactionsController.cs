@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using ABVWebApi.Models;
+using System.Web.Http.Cors;
 
 namespace ABVWebApi.Controllers
 {
@@ -17,9 +18,48 @@ namespace ABVWebApi.Controllers
         private ABVWebApiContext db = new ABVWebApiContext();
 
         // GET: api/Transactions
-        public IQueryable<Transaction> GetTransactions()
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [ResponseType(typeof(Balance[]))]
+        public IHttpActionResult GetTransactions(int month,int year)
         {
-            return db.Transactions;
+
+
+            List<Account> accounts = db.Accounts.ToList();
+
+            List<Balance> balances = new List<Balance>();
+
+            if (!(month >= 0 && month <= 11 && year > 0))
+            {
+                return NotFound();
+            }
+
+            List<Transaction> transactions = (from p in db.Transactions
+                                              where (p.Year == year && p.Month == month)
+                                              select p).ToList();
+
+            foreach (Transaction transaction in transactions)
+            {
+                Account[] accountList = accounts.Where(p => (p.Id == transaction.AccountId)).ToArray();
+
+                Account account = accountList[0];
+                Balance balance = new Balance();
+                balance.accountName = account.AccountDisplayName;
+                balance.accountId = account.Id;
+                balance.transactionId = transaction.Id;
+                balance.amount = transaction.Amount;
+                balance.enteredDateTime = transaction.EnteredDateTime;
+                balance.month = month;
+                balance.year = year;
+
+
+                balances.Add(balance);
+
+            }
+
+
+
+
+            return Ok(balances);
         }
 
         // GET: api/Transactions/5
@@ -36,6 +76,7 @@ namespace ABVWebApi.Controllers
         }
 
         // PUT: api/Transactions/5
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutTransaction(long id, Transaction transaction)
         {
@@ -71,6 +112,7 @@ namespace ABVWebApi.Controllers
         }
 
         // POST: api/Transactions
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
         [ResponseType(typeof(Transaction))]
         public IHttpActionResult PostTransaction(Transaction transaction)
         {
@@ -79,13 +121,22 @@ namespace ABVWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            db.Transactions.Add(transaction);
-            db.SaveChanges();
+            transaction.EnteredDateTime = DateTime.Now;
 
-            return CreatedAtRoute("DefaultApi", new { id = transaction.Id }, transaction);
+            try
+            {
+                db.Transactions.Add(transaction);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = transaction.Id }, transaction);
+            } catch(Exception e) {
+                return BadRequest(ModelState);
+            }
+            
         }
 
         // DELETE: api/Transactions/5
+        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
         [ResponseType(typeof(Transaction))]
         public IHttpActionResult DeleteTransaction(long id)
         {
@@ -95,10 +146,18 @@ namespace ABVWebApi.Controllers
                 return NotFound();
             }
 
-            db.Transactions.Remove(transaction);
-            db.SaveChanges();
 
-            return Ok(transaction);
+            try
+            {
+                db.Transactions.Remove(transaction);
+                db.SaveChanges();
+
+                return CreatedAtRoute("DefaultApi", new { id = transaction.Id }, transaction);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(ModelState);
+            }
         }
 
         protected override void Dispose(bool disposing)

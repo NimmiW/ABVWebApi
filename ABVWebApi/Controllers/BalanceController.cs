@@ -37,36 +37,45 @@ namespace ABVWebApi.Controllers
                 return NotFound();
             }
 
-            Account[] accounts = db.Accounts.ToArray();
+            List<Account> accounts = db.Accounts.ToList();
 
             List<Balance> balances = new List<Balance>();
 
-            foreach (Account account in accounts)
+            if (!(month >= 0 && month <= 11 && year > 0))
             {
-                string accountName = account.AccountName;
-                long accountId = account.Id;
-
-                var amount = (from p in db.Transactions
-                              where (p.Year == year && p.Month == month && p.AccountId == accountId)
-                              select p.Amount).ToArray();
-
-                double adjustedAmount = 0;
-                if (amount.Length > 0)
-                {
-                    adjustedAmount = amount[0];
-                }
-
-                Balance balance = new Balance();
-
-                balance.accountName = accountName;
-                balance.amount = adjustedAmount;
-                balance.month = month;
-                //,adjustedAmount);
-                //ar amount3 = amount
-                balances.Add(balance);
+                return NotFound();
             }
 
-            //var jsonObj = [];
+            List<Transaction> transactions = (from p in db.Transactions
+                                          where (p.Year == year && p.Month == month)
+                                          select p).ToList();
+
+            foreach (Account account in accounts)
+            {
+                Transaction[] transactionList = transactions.Where(p => (p.AccountId == account.Id)).ToArray();
+                Transaction transaction;
+                Balance balance = new Balance();
+                if (transactionList.Length > 0)
+                {
+                    transaction = transactionList[0];
+                    balance.accountName = account.AccountDisplayName;
+                    balance.amount = transaction.Amount;
+                    balance.month = month;
+
+                }
+                else
+                {
+                    balance.accountName = account.AccountDisplayName;
+                    balance.amount = 0;
+                    balance.month = month;
+                }
+
+                balances.Add(balance);
+
+            }
+
+
+
 
             return Ok(balances);
         }
