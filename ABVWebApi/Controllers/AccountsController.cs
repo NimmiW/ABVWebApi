@@ -18,7 +18,7 @@ namespace ABVWebApi.Controllers
         private ABVWebApiContext db = new ABVWebApiContext();
 
         // GET: api/Accounts
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         public IQueryable<Account> GetAccounts()
         {
             return db.Accounts;

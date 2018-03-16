@@ -30,7 +30,7 @@ namespace ABVWebApi.Controllers
         }
 
         // GET: api/Report/5
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(Hashtable))]
         public IHttpActionResult GetReport(long year)
         {

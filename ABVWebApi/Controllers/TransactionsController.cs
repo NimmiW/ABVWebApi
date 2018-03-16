@@ -76,7 +76,7 @@ namespace ABVWebApi.Controllers
         }
 
         // PUT: api/Transactions/5
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutTransaction(long id, Transaction transaction)
         {
@@ -112,7 +112,7 @@ namespace ABVWebApi.Controllers
         }
 
         // POST: api/Transactions
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(Transaction))]
         public IHttpActionResult PostTransaction(Transaction transaction)
         {
@@ -136,7 +136,7 @@ namespace ABVWebApi.Controllers
         }
 
         // DELETE: api/Transactions/5
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(Transaction))]
         public IHttpActionResult DeleteTransaction(long id)
         {

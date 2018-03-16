@@ -28,7 +28,7 @@ namespace ABVWebApi.Controllers
         }
 
         // GET: api/Balance/5
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(List<Balance>))]
         public IHttpActionResult GetBalance(int month, int year)
         {
