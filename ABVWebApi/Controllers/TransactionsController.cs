@@ -18,7 +18,7 @@ namespace ABVWebApi.Controllers
         private ABVWebApiContext db = new ABVWebApiContext();
 
         // GET: api/Transactions
-        [EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [ResponseType(typeof(Balance[]))]
         public IHttpActionResult GetTransactions(int month,int year)
         {
