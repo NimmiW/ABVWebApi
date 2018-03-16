@@ -34,6 +34,13 @@ account balance overview tool. There are 5 accounts in Jondell Corp and they are
 **This ABVWebApi hosted at:**
 https://abvwebapi.azurewebsites.net/
 
+It was made to Continuous integration. Once you commit and push, it automatically deployed to the app-service. An SQL server was used to keep data. 
+
+Azure Paas I used:
+- app service (with github CI support)
+- sql server
+- resource group
+- app service plan
 
 **Complemeted Level**
 About 60 percent of the workload of the assignment was completed.
@@ -42,5 +49,11 @@ About 60 percent of the workload of the assignment was completed.
 - Role-based Authentication
 - Excel Sheet update part
 - Unit Testing Testing
+
+**Tutorials followed**
+- https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet-framework
+- https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/azure-apps/azure-continuous-deployment
+- https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/adding-model
+- https://docs.microsoft.com/en-us/aspnet/core/data/ef-mvc/migrations#entity-framework-core-nuget-packages-for-migrations
 
 <br />
